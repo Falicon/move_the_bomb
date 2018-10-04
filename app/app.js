@@ -27,16 +27,37 @@ const app = new App(config);
 
 app.setHandler({
 
+  /****************************************
+  END
+  ****************************************/
+  'END': function() {
+    let jovo_state = this;
+    jovo_state.tell(jovo_state.t('THANKS_FOR_PLAYING'));
+  },
+
+  /****************************************
+  HELP INTENT
+  ****************************************/
+  'HelpIntent': function() {
+  },
+
+  /****************************************
+  LAUNCH
+  ****************************************/
   'LAUNCH': function() {
-    this.toIntent('HelloWorldIntent');
+    this.toIntent('WelcomeIntent');
   },
 
-  'HelloWorldIntent': function() {
-    this.ask('Hello World! What\'s your name?', 'Please tell me your name.');
+  /****************************************
+  ON GAME ENGINE INPUT HANDLER EVENT
+  ****************************************/
+  'ON_GAME_ENGINE_INPUT_HANDLER_EVENT': function () {
   },
 
-  'MyNameIsIntent': function(name) {
-    this.tell('Hey ' + name.value + ', nice to meet you!');
+  /****************************************
+  WELCOME INTENT
+  ****************************************/
+  'WelcomeIntent': function() {
   },
 
 });
