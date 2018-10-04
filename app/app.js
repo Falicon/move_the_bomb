@@ -1,11 +1,28 @@
 'use strict';
 
+const de = require('./I18n/de-DE');
+const us = require('./I18n/en-US');
+
+const languageResources = {
+  'en-US': us,
+  'de-DE': de
+}
+
 const {App} = require('jovo-framework');
-
 const config = {
-  logging: true,
+  logging: false,
+  i18n: {
+    resources: languageResources,
+    fallbackLng: 'en-US'
+  },
+  intentMap: {
+    'AMAZON.FallbackIntent': 'AnswerIntent',
+    'AMAZON.CancelIntent': 'END',
+    'AMAZON.HelpIntent': 'HelpIntent',
+    'AMAZON.StopIntent': 'END',
+    'AMAZON.NavigateHomeIntent': 'END'
+  }
 };
-
 const app = new App(config);
 
 app.setHandler({
