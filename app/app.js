@@ -45,57 +45,50 @@ app.setHandler({
     let speech = jovo_state.speechBuilder();
     let timeout = explosion_timeout;
 
-    let speech = jovo_state.speechBuilder();
-
     // available_buttons
     let available_buttons = [];
     for (var i = 0; i < players.length; i++) {
       if (!players[i]['exploded']) {
-        available_buttons[i].push(players[i]['button_id']);
+        available_buttons.push(players[i]['button_id']);
       }
     }
 
     let button_slot = 0;
     let chars = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
     let color = "";
-    let sequence = [];
+    let sequence_set = [];
 
     // determine how many flashes we'll do in this animation
     let loop_count = Math.floor(Math.random() * (10 - 0) + 0);
 
     // cycle through the buttons and flash each one a color and then off
     for (var i = 0; i < loop_count; i++) {
-      // pick the button to flash this color
-      button_slot = Math.floor(Math.random() * (available_buttons.length - 0) + 0);
       color = '00';
       for (var j = 0; j < 4; j++) {
-        char_slot = Math.floor(Math.random() * (chars.length - 0) + 0);
+        let char_slot = Math.floor(Math.random() * (chars.length - 0) + 0);
         color += chars[char_slot];
       }
-      sequence = [];
-      sequence.push({'durationMs': 100, 'color': "000000", 'blend': false});
       // pick a color to flash
-      sequence.push({'durationMs': 100, 'color': color, 'blend': false});
-      // flash the button
-      jovo_state.alexaSkill().gadgetController().setNoneTriggerEvent().setAnimations([ { "repeat": 1, "targetLights":["1"], "sequence": sequence } ]).setLight([available_buttons[button_slot]], 0, []);
-
+      sequence_set.push(jovo_state.alexaSkill().gadgetController().getSequenceBuilder().duration(2).color(color));
     }
 
     // button we end on should be turned red and activated
     button_slot = Math.floor(Math.random() * (available_buttons.length - 0) + 0);
 
     // turn it red
-    sequence = [];
-    sequence.push({'durationMs': 100, 'color': "000000", 'blend': false});
-    sequence.push({'durationMs': 100, 'color': "FF0000", 'blend': false});
-    jovo_state.alexaSkill().gadgetController().setNoneTriggerEvent().setAnimations([ { "repeat": 1, "targetLights":["1"], "sequence": sequence } ]).setLight([available_buttons[button_slot]], 0, []);
+    sequence_set.push(jovo_state.alexaSkill().gadgetController().getSequenceBuilder().duration(2).color('FF0000'));
 
-    if (explode_button == active_button || explode_count == push_count) {
+    if (explode_button == active_button || explosion_count == push_count) {
       // explode this button!
-      players[active_button]['exploded'] = true;
+      for (var i = 0; i < players.length; i++) {
+        if (players[i]['button_id'] == active_button) {
+          players[i]['exploded'] = true;
+        }
+      }
       jovo_state.setSessionAttribute('players', players);
 
       // TODO play explosion sound (and animation)
+      speech.addText('BOOM!');
 
       // determine if the round is over or should continue
       let players_left = 0;
@@ -106,10 +99,33 @@ app.setHandler({
       }
 
       if (players_left > 1) {
-        // TODO continue round
+        // move the bomb
+        jovo_state.toIntent('AnimateButtons');
 
       } else {
-        // TODO round is complete!
+        // round is complete!
+        let winner = '';
+        for (var i = 0; i < players.length; i++) {
+          if (!players[i]['exploded']) {
+            winner = i;
+          }
+        }
+
+        // play a winner animation!
+        sequence_set.push(jovo_state.alexaSkill().gadgetController().getSequenceBuilder().duration(2).color('000000'));
+        sequence_set.push(jovo_state.alexaSkill().gadgetController().getSequenceBuilder().duration(2).color('00FF00'));
+        sequence_set.push(jovo_state.alexaSkill().gadgetController().getSequenceBuilder().duration(2).color('00FFFF'));
+
+        buttons_list.push(players[winner]['button_id']);
+
+        // TODO flash the buttons using sequence set
+
+        speech.addText(jovo_state.t('WINNER', {'player_name':players[winner]['player_name']})).addBreak('100ms');
+        speech.addText(jovo_state.t('ANOTHER_ROUND'));
+
+        jovo_state.setSessionAttribute('listen_for', 'continue_game');
+
+        jovo_state.ask(speech, speech);
 
       }
 
@@ -119,6 +135,8 @@ app.setHandler({
 
       // TODO update sound effect
       speech.addText('tick tick tick');
+
+      // TODO flash the buttons using sequence set
 
       let pattern = {'action':'down', 'gadgetIds':[available_buttons[button_slot]]};
       let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
@@ -136,6 +154,7 @@ app.setHandler({
   ****************************************/
   'AnswerIntent': function(questionResponse) {
     let jovo_state = this;
+    let question_response = questionResponse.value;
 
     let active_button = jovo_state.getSessionAttribute('active_button');
     let button_count = jovo_state.getSessionAttribute('button_count');
@@ -151,15 +170,14 @@ app.setHandler({
     let speech = jovo_state.speechBuilder();
     let timeout = 30000;
 
-    let speech = jovo_state.speechBuilder();
-
     if (listen_for == 'button_count') {
       /********************************
       GET THE NUMBER OF BUTTONS WE SHOULD SET UP
       ********************************/
       // ensure that user gave a number (ideally between 2 and 4)
+
       try {
-        question_response = parseInt(parse_for_german_numbers(question_response));
+        question_response = parseInt(question_response);
         if (isNaN(question_response)) {
           question_response = 0;
         }
@@ -356,8 +374,6 @@ app.setHandler({
           // we're ready to start the first round
           jovo_state.setSessionAttribute('in_game', true);
 
-          let speech = jovo_state.speechBuilder();
-
           // explain the details of the game
           speech.addText(jovo_state.t('GAME_DETAIL'));
 
@@ -366,7 +382,7 @@ app.setHandler({
           jovo_state.setSessionAttribute('explosion_count', explosion_count);
 
           // set the explosion time out
-          explosion_timeout = Math.floor(Math.random() * (10000 - 3000) + 3000);
+          explosion_timeout = Math.floor(Math.random() * (45000 - 20000) + 20000);
           jovo_state.setSessionAttribute('explosion_timeout', explosion_timeout);
 
           // start the animation
@@ -428,7 +444,7 @@ app.setHandler({
   'WelcomeIntent': function() {
     let jovo_state = this;
 
-    jovo_state.setSessionAttribute('active_button', 0);
+    jovo_state.setSessionAttribute('active_button', 'xyz');
     jovo_state.setSessionAttribute('button_count', 0);
     jovo_state.setSessionAttribute('explode_button', 0);
     jovo_state.setSessionAttribute('explosion_count', 0);
