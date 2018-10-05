@@ -1,5 +1,16 @@
 {
   "translation": {
+    "ALREADY_REGISTERD": "That button seems to already be registered, please try one that you haven't set up for the game yet.",
+    "ANOTHER_ROUND": "Would you like to play another round?",
+    "GAME_DETAIL": "When your button turns read, push it to move it someone else. If it's red when the bomb explodes, your out of the round. Rounds continue until only one butotn remains.",
+    "HOW_MANY_PLAYERS": "How many players do you want to play with?",
+    "NEXT_ROUND": "All buttons are now reset, and here we go.",
+    "PLAYER_PRESS_BUTTON": "{{player_name}}, please press your button.",
+    "SETUP_BUTTON_COUNT": "Great! Lets get {{button_count}} buttons set up for the game! Player one, please press your button.",
+    "SORRY_CONTINUE": "Sorry, I'm not sure if you want to continue or not. Please say yes if you want to continue, or no if you want to end the game. Would you like to continue?",
+    "THANKS_FOR_PLAYING": "Thanks for playing, move the bomb!",
+    "TWO_REQUIRED": "Sorry. This game requires at least two buttons and two players. How many players would you like to play with?",
+    "TWO_REQUIRED_REPEAT": "How many players do you have?",
     "WELCOME": "Welcome to Move the Bomb! This game requires Alexa buttons. Each player should have their own button. How many players will there be?",
     "WELCOME_REPEAT": "How many players do you want to play with?"
   }
