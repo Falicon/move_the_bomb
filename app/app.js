@@ -48,10 +48,18 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
+    let say_something = jovo_state.getSessionAttribute('say_something');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
     let timeout = explosion_timeout;
+
+    // if we passed a reference for something to say, let's say it.
+    if (say_something != '') {
+      speech.addText(jovo_state.t(say_something));
+      // reset the reference so we don't repeat
+      jovo_state.setSessionAttribute('say_something', '');
+    }
 
     // available_buttons
     let available_buttons = [];
@@ -356,6 +364,7 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
+    let say_something = jovo_state.getSessionAttribute('say_something');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
@@ -513,6 +522,7 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
+    let say_something = jovo_state.getSessionAttribute('say_something');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
@@ -568,7 +578,7 @@ app.setHandler({
           jovo_state.setSessionAttribute('in_game', true);
 
           // explain the details of the game
-          speech.addText(jovo_state.t('GAME_DETAIL'));
+          jovo_state.setSessionAttribute('say_something', 'GAME_DETAIL');
 
           // set the explosion count (somewhere between 3 and 12)
           explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
@@ -646,6 +656,7 @@ app.setHandler({
     jovo_state.setSessionAttribute('listen_for', 'button_count');
     jovo_state.setSessionAttribute('players', []);
     jovo_state.setSessionAttribute('push_count', 0);
+    jovo_state.setSessionAttribute('say_something', '');
 
     // Welcome players; ask how many buttons
     jovo_state.ask(jovo_state.t('WELCOME'), jovo_state.t('WELCOME_REPEAT'));
