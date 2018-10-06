@@ -266,7 +266,7 @@ app.setHandler({
 
         jovo_state.setSessionAttribute('listen_for', 'continue_game');
 
-        jovo_state.alexaSkill().gadgetController().respond(speech);
+        jovo_state.ask(speech, speech);
 
       }
 
