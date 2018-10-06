@@ -6,6 +6,7 @@
     "HOW_MANY_PLAYERS": "How many players do you want to play with?",
     "NEXT_ROUND": "All buttons are now reset, and here we go.",
     "PLAYER_PRESS_BUTTON": "{{player_name}}, please press your button.",
+    "PLAYER_ELIMINATED": "{{player_name}} has been eliminated.",
     "SETUP_BUTTON_COUNT": "Great! Lets get {{button_count}} buttons set up for the game! Player one, please press your button.",
     "SORRY_CONTINUE": "Sorry, I'm not sure if you want to continue or not. Please say yes if you want to continue, or no if you want to end the game. Would you like to continue?",
     "THANKS_FOR_PLAYING": "Thanks for playing, move the bomb!",

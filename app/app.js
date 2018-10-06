@@ -87,7 +87,8 @@ app.setHandler({
       jovo_state.setSessionAttribute('players', players);
 
       // TODO play explosion sound (and animation)
-      speech.addText('BOOM! Player ' + eliminated_player + ' has been eliminated.');
+      speech.addText('BOOM!');
+      speech.addText(jovo_state.t('PLAYER_ELIMINATED', {'player_name': 'player ' + eliminated_player}));
 
       // determine if the round is over or should continue
       let players_left = 0;
