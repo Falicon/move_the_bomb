@@ -66,6 +66,10 @@ app.setHandler({
       speech.addText(jovo_state.t(say_something));
       // reset the reference so we don't repeat
       jovo_state.setSessionAttribute('say_something', '');
+
+    } else {
+      // TODO play a moved bomb sound
+
     }
 
     // available_buttons
@@ -631,9 +635,9 @@ app.setHandler({
           /********************************
           BUTTON ALREADY ASSIGNED
           ********************************/
-          jovo_state.setSessionAttribute('music_slot', music_slot);
-
           speech.addText(jovo_state.t('ALREADY_REGISTERED'));
+
+          // TODO play an error sound
 
           let pattern = {'action':'down'};
           let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
