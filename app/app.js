@@ -557,6 +557,8 @@ app.setHandler({
           'player_name': 'Player ' + current_count
         });
 
+        // TODO play a successful registered sound
+
         // save the updated player details to our session
         jovo_state.setSessionAttribute('listen_for', 'set_up');
         jovo_state.setSessionAttribute('players', players);
