@@ -154,15 +154,6 @@ app.setHandler({
           if (button_slot > (available_buttons.length - 1)) {
             button_slot = 0;
           }
-          // pick a random button to flash (that isn't the last button we flashed)
-          // let new_button = false;
-          // while (!new_button) {
-          //   button_slot = Math.floor(Math.random() * (available_buttons.length - 0) + 0);
-          //   if (button_slot != last_button) {
-          //     last_button = button_slot;
-          //     new_button = true;
-          //   }
-          // }
 
           if (available_buttons[button_slot] in animations) {
             // just append this sequence
@@ -295,15 +286,6 @@ app.setHandler({
         if (button_slot > (available_buttons.length - 1)) {
           button_slot = 0;
         }
-        // pick a random button to flash (that isn't the last button we flashed)
-        // let new_button = false;
-        // while (!new_button) {
-        //   button_slot = Math.floor(Math.random() * (available_buttons.length - 0) + 0);
-        //   if (button_slot != last_button) {
-        //     last_button = button_slot;
-        //     new_button = true;
-        //   }
-        // }
 
         if (available_buttons[button_slot] in animations) {
           // just append this sequence
@@ -438,8 +420,7 @@ app.setHandler({
           jovo_state.setSessionAttribute('explode_button', 0);
 
           // set the explosion count (somewhere between 3 and 12)
-          // explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
-          explosion_count = 2;
+          explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
           jovo_state.setSessionAttribute('explosion_count', explosion_count);
 
           // set the explosion time out
@@ -577,8 +558,7 @@ app.setHandler({
           speech.addText(jovo_state.t('GAME_DETAIL'));
 
           // set the explosion count (somewhere between 3 and 12)
-          // explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
-          explosion_count = 2;
+          explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
           jovo_state.setSessionAttribute('explosion_count', explosion_count);
 
           // set the explosion time out
