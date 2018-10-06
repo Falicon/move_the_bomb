@@ -24,7 +24,14 @@ const config = {
 const app = new App(config);
 
 let clocks = [
-  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+  'https://s3.amazonaws.com/coachwizard/light_cycle_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/exoplanet_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/sequence_bass_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/liverpool_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/muted_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/p-bass_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/picked_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/retro_bass_converted.mp3',
 ];
 
 let explosions = [
