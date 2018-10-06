@@ -23,6 +23,14 @@ const config = {
 };
 const app = new App(config);
 
+let clocks = [
+  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+];
+
+let explosions = [
+  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+];
+
 app.setHandler({
 
   /****************************************
@@ -86,8 +94,9 @@ app.setHandler({
       }
       jovo_state.setSessionAttribute('players', players);
 
-      // TODO play explosion sound (and animation)
-      speech.addText('BOOM!');
+      // play explosion sound (and animation)
+      let explosion_slot = Math.floor(Math.random() * (explosions.length - 0) + 0);
+      speech.addAudio(explosions[explosion_slot]);
       speech.addText(jovo_state.t('PLAYER_ELIMINATED', {'player_name': 'player ' + eliminated_player}));
 
       // determine if the round is over or should continue
@@ -184,8 +193,9 @@ app.setHandler({
         // keep track of the active_button the button
         jovo_state.setSessionAttribute('active_button', available_buttons[end_on]);
 
-        // TODO update sound effect
-        speech.addText('tick tick tick');
+        // update sound effect
+        let clock_slot = Math.floor(Math.random() * (clocks.length - 0) + 0);
+        speech.addAudio(clocks[clock_slot]).addBreak('100ms');
 
         let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
         let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
@@ -316,8 +326,8 @@ app.setHandler({
       // keep track of the active_button the button
       jovo_state.setSessionAttribute('active_button', available_buttons[end_on]);
 
-      // TODO update sound effect
-      speech.addText('tick tick tick');
+      let clock_slot = Math.floor(Math.random() * (clocks.length - 0) + 0);
+      speech.addAudio(clocks[clock_slot]).addBreak('100ms');
 
       let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
       let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
