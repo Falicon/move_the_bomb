@@ -1,5 +1,16 @@
 'use strict';
 
+/***********************************
+Potential TODO:
+
+1. Explode the bomb when the wrong button is pushed
+
+2. Skip the "how many buttons" bit and just ask players to push the buttons they want to play with
+  - just have timeout window that knows when we're ready?
+  - detect second button click to know complete?
+
+***********************************/
+
 const us = require('./I18n/en-US');
 
 const languageResources = {
@@ -23,7 +34,7 @@ const config = {
 };
 const app = new App(config);
 
-let clocks = [
+let clock_sounds = [
   'https://s3.amazonaws.com/coachwizard/light_cycle_converted.mp3',
   'https://s3.amazonaws.com/coachwizard/exoplanet_converted.mp3',
   'https://s3.amazonaws.com/coachwizard/sequence_bass_converted.mp3',
@@ -34,7 +45,19 @@ let clocks = [
   'https://s3.amazonaws.com/coachwizard/retro_bass_converted.mp3',
 ];
 
-let explosions = [
+let error_sounds = [
+  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+];
+
+let explosion_sounds = [
+  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+];
+
+let move_sounds = [
+  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+];
+
+let registered_sounds = [
   'https://s3.amazonaws.com/coachwizard/up_one.mp3',
 ];
 
@@ -68,7 +91,9 @@ app.setHandler({
       jovo_state.setSessionAttribute('say_something', '');
 
     } else {
-      // TODO play a moved bomb sound
+      // play a moved bomb sound
+      let move_slot = Math.floor(Math.random() * (move_sounds.length - 0) + 0);
+      speech.addAudio(move_sounds[move_slot]);
 
     }
 
@@ -114,8 +139,8 @@ app.setHandler({
       jovo_state.setSessionAttribute('players', players);
 
       // play explosion sound (and animation)
-      let explosion_slot = Math.floor(Math.random() * (explosions.length - 0) + 0);
-      speech.addAudio(explosions[explosion_slot]);
+      let explosion_slot = Math.floor(Math.random() * (explosion_sounds.length - 0) + 0);
+      speech.addAudio(explosion_sounds[explosion_slot]);
       speech.addText(jovo_state.t('PLAYER_ELIMINATED', {'player_name': 'player ' + eliminated_player}));
 
       // determine if the round is over or should continue
@@ -213,9 +238,10 @@ app.setHandler({
         jovo_state.setSessionAttribute('active_button', available_buttons[end_on]);
 
         // update sound effect
-        let clock_slot = Math.floor(Math.random() * (clocks.length - 0) + 0);
-        speech.addAudio(clocks[clock_slot]).addBreak('100ms');
+        let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+        speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
+        // start listening for (the correct) button push
         let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
         let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
         let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
@@ -345,9 +371,10 @@ app.setHandler({
       // keep track of the active_button the button
       jovo_state.setSessionAttribute('active_button', available_buttons[end_on]);
 
-      let clock_slot = Math.floor(Math.random() * (clocks.length - 0) + 0);
-      speech.addAudio(clocks[clock_slot]).addBreak('100ms');
+      let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+      speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
+      // start listening for (the correct) button push
       let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
       let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
       let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
@@ -406,7 +433,7 @@ app.setHandler({
 
         speech.addText(jovo_state.t('SETUP_BUTTON_COUNT', {button_count: question_response}));
 
-        // start listening for a single button push event
+        // start listening for any button push event
         let pattern = {'action':'down'};
         let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
         let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
@@ -578,7 +605,9 @@ app.setHandler({
           'player_name': 'Player ' + current_count
         });
 
-        // TODO play a successful registered sound
+        // play a successful registered sound
+        let registered_slot = Math.floor(Math.random() * (registered_sounds.length - 0) + 0);
+        speech.addAudio(registered_sounds[registered_slot]).addBreak('100ms');
 
         // save the updated player details to our session
         jovo_state.setSessionAttribute('listen_for', 'set_up');
@@ -624,6 +653,9 @@ app.setHandler({
           /********************************
           IN GAME
           ********************************/
+
+          // TODO determine if the correct button was pushed (explode user if not?)
+
           // increment the push_count
           push_count++;
           jovo_state.setSessionAttribute('push_count', push_count);
@@ -637,7 +669,9 @@ app.setHandler({
           ********************************/
           speech.addText(jovo_state.t('ALREADY_REGISTERED'));
 
-          // TODO play an error sound
+          // play an error sound
+          let error_slot = Math.floor(Math.random() * (error_sounds.length - 0) + 0);
+          speech.addAudio(error_sounds[error_slot]).addBreak('100ms');
 
           let pattern = {'action':'down'};
           let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
