@@ -3,9 +3,7 @@
 /***********************************
 Potential TODO:
 
-1. Explode the bomb when the wrong button is pushed
-
-2. Skip the "how many buttons" bit and just ask players to push the buttons they want to play with
+Skip the "how many buttons" bit and just ask players to push the buttons they want to play with
   - just have timeout window that knows when we're ready?
   - detect second button click to know complete?
 
@@ -46,19 +44,30 @@ let clock_sounds = [
 ];
 
 let error_sounds = [
-  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+  'https://s3.amazonaws.com/coachwizard/error_one_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/error_two_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/error_three_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/error_four_converted.mp3'
 ];
 
 let explosion_sounds = [
-  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
-];
-
-let move_sounds = [
-  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
-];
-
-let registered_sounds = [
-  'https://s3.amazonaws.com/coachwizard/up_one.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_one_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_two_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_three_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_four_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_five_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_six_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_seven_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_eight_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_nine_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_ten_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_eleven_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_twelve_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_thirteen_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_fourteen_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_fifteen_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_sixteen_converted.mp3',
+  'https://s3.amazonaws.com/coachwizard/explosion_seventeen_converted.mp3'
 ];
 
 app.setHandler({
@@ -78,24 +87,11 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
-    let say_something = jovo_state.getSessionAttribute('say_something');
+    let repeat_count = jovo_state.getSessionAttribute('repeat_count');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
     let timeout = explosion_timeout;
-
-    // if we passed a reference for something to say, let's say it.
-    if (say_something != '') {
-      speech.addText(jovo_state.t(say_something));
-      // reset the reference so we don't repeat
-      jovo_state.setSessionAttribute('say_something', '');
-
-    } else {
-      // play a moved bomb sound
-      let move_slot = Math.floor(Math.random() * (move_sounds.length - 0) + 0);
-      speech.addAudio(move_sounds[move_slot]);
-
-    }
 
     // available_buttons
     let available_buttons = [];
@@ -112,6 +108,12 @@ app.setHandler({
 
     // pick button we end on
     let end_on = Math.floor(Math.random() * (available_buttons.length - 0) + 0);
+
+    if (push_count == 0) {
+      // Let the players know we are starting
+      speech.addText(jovo_state.t('START_ROUND'));
+
+    }
 
     if (explode_button == active_button || explosion_count == push_count) {
 
@@ -194,7 +196,7 @@ app.setHandler({
           if (i == loop_count - 1) {
             // turn the button we end on red
             sequence.push({'durationMs': flash_duration, 'color': '000000', 'blend': false});
-            sequence.push({'durationMs': 500, 'color': 'FF0000', 'blend': false});
+            sequence.push({'durationMs': 5000, 'color': 'FF0000', 'blend': false});
 
           } else {
             // otherwise flash the button a random color
@@ -242,7 +244,8 @@ app.setHandler({
         speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
         // start listening for (the correct) button push
-        let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
+        // let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
+        let pattern = {'action':'down'};
         let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
         let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
         let timeoutEvent = this.alexaSkill().gameEngine().getEventsBuilder('timeoutEvent').meets(['timed out']).reportsNothing().shouldEndInputHandler(true).build();
@@ -280,17 +283,6 @@ app.setHandler({
         // end on green as winning color
         sequence.push({'durationMs': 100, 'color': '00FF00', 'blend': true});
 
-        // turn all buttons black (the one that just exploded should already end on black)
-        for (var i = 0; i < players.length; i++) {
-          if (players[i]['button_id'] != active_button) {
-            jovo_state.alexaSkill()
-              .gadgetController()
-              .setNoneTriggerEvent()
-              .setAnimations([ { "repeat": 1, "targetLights":["1"], "sequence": [{'durationMs': 100, 'color': '000000', 'blend': false}] } ])
-              .setLight([players[i]['button_id']], 0, []);
-          }
-        }
-
         // play a winner animation!
         jovo_state.alexaSkill()
           .gadgetController()
@@ -299,6 +291,7 @@ app.setHandler({
           .setLight([players[winner]['button_id']], 0, []);
 
         speech.addText(jovo_state.t('WINNER', {'player_name':players[winner]['player_name']})).addBreak('100ms');
+
         speech.addText(jovo_state.t('ANOTHER_ROUND'));
 
         jovo_state.setSessionAttribute('listen_for', 'continue_game');
@@ -328,7 +321,7 @@ app.setHandler({
         if (i == loop_count - 1) {
           // turn the button we end on red
           sequence.push({'durationMs': flash_duration, 'color': '000000', 'blend': false});
-          sequence.push({'durationMs': 500, 'color': 'FF0000', 'blend': false});
+          sequence.push({'durationMs': 5000, 'color': 'FF0000', 'blend': false});
 
         } else {
           // otherwise flash the button a random color
@@ -375,7 +368,8 @@ app.setHandler({
       speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
       // start listening for (the correct) button push
-      let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
+      // let pattern = {'action':'down', 'gadgetIds':[available_buttons[end_on]]};
+      let pattern = {'action':'down'};
       let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
       let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
       let timeoutEvent = this.alexaSkill().gameEngine().getEventsBuilder('timeoutEvent').meets(['timed out']).reportsNothing().shouldEndInputHandler(true).build();
@@ -402,7 +396,7 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
-    let say_something = jovo_state.getSessionAttribute('say_something');
+    let repeat_count = jovo_state.getSessionAttribute('repeat_count');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
@@ -433,6 +427,9 @@ app.setHandler({
 
         speech.addText(jovo_state.t('SETUP_BUTTON_COUNT', {button_count: question_response}));
 
+        let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+        speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
+
         // start listening for any button push event
         let pattern = {'action':'down'};
         let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
@@ -440,6 +437,39 @@ app.setHandler({
         let timeoutEvent = this.alexaSkill().gameEngine().getEventsBuilder('timeoutEvent').meets(['timed out']).reportsNothing().shouldEndInputHandler(true).build();
         jovo_state.alexaSkill().gameEngine().setEvents([buttonDownEvent, timeoutEvent]).setRecognizers([buttonDownRecognizer]).startInputHandler(timeout);
         jovo_state.alexaSkill().gameEngine().respond(speech);
+
+      }
+
+    } else if (listen_for == 'start_game') {
+      /********************************
+      GET THE GAME STARTED
+      ********************************/
+      let start_game = false;
+      if (question_response.indexOf('yes') > -1 || question_response.indexOf('sure') > -1 || question_response.indexOf('ok') > -1 || question_response.indexOf('start')) {
+        start_game = true;
+
+      }
+
+      if (!start_game) {
+        // provide instructions on how to start the game;
+        speech.addText(jovo_state.t('START_GAME_INSTRUCTIONS'));
+
+        jovo_state.ask(speech, speech);
+
+      } else {
+        // set the explosion count (somewhere between 3 and 12)
+        explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
+        jovo_state.setSessionAttribute('explosion_count', explosion_count);
+
+        // set the explosion time out
+        explosion_timeout = Math.floor(Math.random() * (45000 - 20000) + 20000);
+        jovo_state.setSessionAttribute('explosion_timeout', explosion_timeout);
+
+        // start the push_count
+        jovo_state.setSessionAttribute('push_count', 0);
+
+        // start the animation
+        jovo_state.toIntent('AnimateButtons');
 
       }
 
@@ -560,11 +590,11 @@ app.setHandler({
     let listen_for = jovo_state.getSessionAttribute('listen_for');
     let players = jovo_state.getSessionAttribute('players');
     let push_count = jovo_state.getSessionAttribute('push_count');
-    let say_something = jovo_state.getSessionAttribute('say_something');
+    let repeat_count = jovo_state.getSessionAttribute('repeat_count');
 
     let current_count = players.length;
     let speech = jovo_state.speechBuilder();
-    let timeout = 45000;
+    let timeout = 30000;
 
     let input_event = jovo_state.request().getEvents()[0];
     let input_event_name = input_event.name;
@@ -573,10 +603,37 @@ app.setHandler({
       /********************************
       DEAL WITH BUTTON TIME OUT
       ********************************/
-      // explode the active button
-      jovo_state.setSessionAttribute('explode_button', active_button);
+      if (in_game) {
+        // explode the active button
+        jovo_state.setSessionAttribute('explode_button', active_button);
 
-      jovo_state.toIntent('AnimateButtons');
+        jovo_state.toIntent('AnimateButtons');
+
+      } else {
+        if (repeat_count > 1) {
+          // we've already told them to push a button; time to end the game
+          jovo_state.toIntent('END');
+
+        } else {
+          // explain that at least two buttons are required;
+          repeat_count++;
+          jovo_state.setSessionAttribute('repeat_count', repeat_count);
+
+          speech.addText(jovo_state.t('PUSH_ANOTHER'));
+
+          let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+          speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
+
+          let pattern = {'action':'down'};
+          let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
+          let buttonDownEvent = jovo_state.alexaSkill().gameEngine().getEventsBuilder('buttonDownEvent').meets(['buttonDownRecognizer']).reportsMatches().shouldEndInputHandler(true).build();
+          let timeoutEvent = this.alexaSkill().gameEngine().getEventsBuilder('timeoutEvent').meets(['timed out']).reportsNothing().shouldEndInputHandler(true).build();
+          jovo_state.alexaSkill().gameEngine().setEvents([buttonDownEvent, timeoutEvent]).setRecognizers([buttonDownRecognizer]).startInputHandler(timeout);
+          jovo_state.alexaSkill().gameEngine().respond(speech);
+
+        }
+
+      }
 
     } else if (input_event_name == 'buttonDownEvent') {
       /********************************
@@ -605,10 +662,6 @@ app.setHandler({
           'player_name': 'Player ' + current_count
         });
 
-        // play a successful registered sound
-        let registered_slot = Math.floor(Math.random() * (registered_sounds.length - 0) + 0);
-        speech.addAudio(registered_sounds[registered_slot]).addBreak('100ms');
-
         // save the updated player details to our session
         jovo_state.setSessionAttribute('listen_for', 'set_up');
         jovo_state.setSessionAttribute('players', players);
@@ -616,24 +669,20 @@ app.setHandler({
         if (current_count == button_count) {
           // we're ready to start the first round
           jovo_state.setSessionAttribute('in_game', true);
+          jovo_state.setSessionAttribute('listen_for', 'start_game');
 
           // explain the details of the game
-          jovo_state.setSessionAttribute('say_something', 'GAME_DETAIL');
+          speech.addText(jovo_state.t('GAME_DETAIL'));
+          speech.addText(jovo_state.t('START_GAME'));
 
-          // set the explosion count (somewhere between 3 and 12)
-          explosion_count = Math.floor(Math.random() * (13 - 3) + 3);
-          jovo_state.setSessionAttribute('explosion_count', explosion_count);
-
-          // set the explosion time out
-          explosion_timeout = Math.floor(Math.random() * (45000 - 20000) + 20000);
-          jovo_state.setSessionAttribute('explosion_timeout', explosion_timeout);
-
-          // start the animation
-          jovo_state.toIntent('AnimateButtons');
+          jovo_state.ask(speech, speech);
 
         } else {
           // need to set up more buttons
           speech.addText(jovo_state.t('PLAYER_PRESS_BUTTON', {player_name: 'Player ' + (current_count + 1)}));
+
+          let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+          speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
           // enable the next input handler
           let pattern = {'action':'down'};
@@ -654,24 +703,36 @@ app.setHandler({
           IN GAME
           ********************************/
 
-          // TODO determine if the correct button was pushed (explode user if not?)
+          // determine if the correct button was pushed (explode user if not?)
+          if (button_id != active_button) {
+            // deal with wrong butotn push
+            jovo_state.setSessionAttribute('active_button', button_id);
+            jovo_state.setSessionAttribute('explode_button', button_id);
 
-          // increment the push_count
-          push_count++;
-          jovo_state.setSessionAttribute('push_count', push_count);
+            jovo_state.toIntent('AnimateButtons');
 
-          // move the bomb
-          jovo_state.toIntent('AnimateButtons');
+          } else {
+            // increment the push_count
+            push_count++;
+            jovo_state.setSessionAttribute('push_count', push_count);
+
+            // move the bomb
+            jovo_state.toIntent('AnimateButtons');
+
+          }
 
         } else {
           /********************************
           BUTTON ALREADY ASSIGNED
           ********************************/
-          speech.addText(jovo_state.t('ALREADY_REGISTERED'));
-
           // play an error sound
           let error_slot = Math.floor(Math.random() * (error_sounds.length - 0) + 0);
           speech.addAudio(error_sounds[error_slot]).addBreak('100ms');
+
+          speech.addText(jovo_state.t('ALREADY_REGISTERED'));
+
+          let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
+          speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
 
           let pattern = {'action':'down'};
           let buttonDownRecognizer = jovo_state.alexaSkill().gameEngine().getPatternRecognizerBuilder('buttonDownRecognizer').anchorEnd().fuzzy(false).pattern([pattern]);
@@ -701,6 +762,7 @@ app.setHandler({
     jovo_state.setSessionAttribute('listen_for', 'button_count');
     jovo_state.setSessionAttribute('players', []);
     jovo_state.setSessionAttribute('push_count', 0);
+    jovo_state.setSessionAttribute('repeat_count', 0);
     jovo_state.setSessionAttribute('say_something', '');
 
     // Welcome players; ask how many buttons
