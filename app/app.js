@@ -9,10 +9,12 @@ Skip the "how many buttons" bit and just ask players to push the buttons they wa
 
 ***********************************/
 
+const de = require('./I18n/de-DE');
 const us = require('./I18n/en-US');
 
 const languageResources = {
-  'en-US': us
+  'en-US': us,
+  'de-DE': de
 }
 
 const {App} = require('jovo-framework');
@@ -69,6 +71,34 @@ let explosion_sounds = [
   'https://s3.amazonaws.com/coachwizard/explosion_sixteen_converted.mp3',
   'https://s3.amazonaws.com/coachwizard/explosion_seventeen_converted.mp3'
 ];
+
+/****************************************
+PARSE FOR GERMAN NUMBERS
+****************************************/
+function parse_for_german_numbers(raw_text) {
+  var parsed_val = raw_text;
+  if (raw_text.indexOf('eins') > -1) { parsed_val = 1; }
+  else if (raw_text.indexOf('zwei') > -1) { parsed_val = 2; }
+  else if (raw_text.indexOf('drei') > -1) { parsed_val = 3; }
+  else if (raw_text.indexOf('vier') > -1) { parsed_val = 4; }
+  else if (raw_text.indexOf('fünf') > -1) { parsed_val = 5; }
+  else if (raw_text.indexOf('sechs') > -1) { parsed_val = 6; }
+  else if (raw_text.indexOf('sieben') > -1) { parsed_val = 7; }
+  else if (raw_text.indexOf('acht') > -1) { parsed_val = 8; }
+  else if (raw_text.indexOf('neun') > -1) { parsed_val = 9; }
+  else if (raw_text.indexOf('zehn') > -1) { parsed_val = 10; }
+  else if (raw_text.indexOf('elf') > -1) { parsed_val = 11; }
+  else if (raw_text.indexOf('zwölf') > -1) { parsed_val = 12; }
+  else if (raw_text.indexOf('dreizehn') > -1) { parsed_val = 13; }
+  else if (raw_text.indexOf('vierzehn') > -1) { parsed_val = 14; }
+  else if (raw_text.indexOf('fünfzehn') > -1) { parsed_val = 15; }
+  else if (raw_text.indexOf('sechszehn') > -1) { parsed_val = 16; }
+  else if (raw_text.indexOf('siebzehn') > -1) { parsed_val = 17; }
+  else if (raw_text.indexOf('achtzehn') > -1) { parsed_val = 18; }
+  else if (raw_text.indexOf('neunzehn') > -1) { parsed_val = 19; }
+  else if (raw_text.indexOf('zwanzig') > -1) { parsed_val = 20; }
+  return parsed_val;
+}
 
 app.setHandler({
 
@@ -409,7 +439,7 @@ app.setHandler({
       // ensure that user gave a number (ideally between 2 and 4)
 
       try {
-        question_response = parseInt(question_response);
+        question_response = parseInt(parse_for_german_numbers(question_response));
         if (isNaN(question_response)) {
           question_response = 0;
         }
@@ -445,7 +475,13 @@ app.setHandler({
       GET THE GAME STARTED
       ********************************/
       let start_game = false;
-      if (question_response.indexOf('yes') > -1 || question_response.indexOf('sure') > -1 || question_response.indexOf('ok') > -1 || question_response.indexOf('start')) {
+      if (
+        question_response.indexOf('yes') > -1 ||
+        question_response.indexOf('sure') > -1 ||
+        question_response.indexOf('ok') > -1 ||
+        question_response.indexOf('ja') > -1 ||
+        question_response.indexOf('sicher') > -1
+      ) {
         start_game = true;
 
       }
@@ -478,13 +514,21 @@ app.setHandler({
       EITHER MOVE TO THE NEXT ROUND OR END THE GAME
       ********************************/
       let continue_round = true;
-      if (question_response.indexOf('no') > -1 || question_response.indexOf('stop') > -1 || question_response.indexOf('quit') > -1) {
+      if (
+        question_response.indexOf('no') > -1 || 
+        question_response.indexOf('nein') > -1
+      ) {
         continue_round = false;
 
       }
 
       // if not yes or no, re-ask about playing another round?
-      if (question_response.indexOf('no') == -1 && question_response.indexOf('yes') == -1 && question_response.indexOf('continue') == -1 && question_response.indexOf('quit') == -1) {
+      if (
+        question_response.indexOf('no') == -1 && 
+        question_response.indexOf('yes') == -1 && 
+        question_response.indexOf('ja') == -1 && 
+        question_response.indexOf('nein') == -1
+      ) {
         // not sure what they actually wanted, so repeat the continue_round question
         jovo_state.ask(jovo_state.t('SORRY_CONTINUE'));
 
