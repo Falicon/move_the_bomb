@@ -5,8 +5,9 @@
     "GAME_DETAIL": "Wenn die Schaltfläche rot wird, drücken Sie sie, um sie an jemand anderen zu verschieben. Wenn Sie den Knopf drücken, wenn es nicht rot ist, nehmen Sie zu lange, wenn es ist, oder drücken Sie es zu oft, es wird explodieren. Wenn dein Knopf explodiert, bist du out of the round. Runden werden fortgesetzt, bis nur noch ein Knopf übrig ist.",
     "HOW_MANY_PLAYERS": "Mit wie vielen Spielern möchtest du spielen?",
     "NEXT_ROUND": "Alle Tasten sind jetzt zurückgesetzt.",
-    "PLAYER_PRESS_BUTTON": "{{player_name}}, Bitte drücken Sie Ihre Taste.",
-    "PLAYER_ELIMINATED": "{{player_name}} wurde beseitigt.",
+    "PLAYER": "Spieler {{player_number}}",
+    "PLAYER_PRESS_BUTTON": "Spieler {{player_number}}, Bitte drücken Sie Ihre Taste.",
+    "PLAYER_ELIMINATED": "Spieler {{player_number}} wurde beseitigt.",
     "PUSH_ANOTHER": "Bevor wir das Spiel beginnen können, müssen wir alle Knöpfe einrichten. Bitte drücken Sie eine andere Taste.",
     "SETUP_BUTTON_COUNT": "Groß! Lass uns {{button_count}} Buttons für das Spiel einrichten! Spieler eins, bitte drücke deinen Knopf.",
     "SORRY_CONTINUE": "Entschuldigung, ich bin mir nicht sicher, ob du fortfahren willst oder nicht. Bitte sagen Sie Ja, wenn Sie fortfahren möchten, oder Nein, wenn Sie das Spiel beenden möchten. Möchten Sie fortfahren?",
@@ -16,7 +17,7 @@
     "THANKS_FOR_PLAYING": "Danke fürs Spielen, verschiebe die Bombe!",
     "TWO_REQUIRED": "Es tut uns leid. Dieses Spiel benötigt mindestens zwei Tasten und zwei Spieler. Mit wie vielen Spielern würdest du gerne spielen?",
     "TWO_REQUIRED_REPEAT": "Wie viele Spieler hast du?",
-    "WELCOME": "Willkommen bei Move the Bomb! Dieses Spiel benötigt Alexa-Tasten. Jeder Spieler sollte seinen eigenen Button haben. Wie viele Spieler wird es geben?",
+    "WELCOME": "Willkommen, um die Bombe zu bewegen! Dieses Spiel benötigt Alexa-Tasten. Jeder Spieler sollte seinen eigenen Button haben. Wie viele Spieler wird es geben?",
     "WELCOME_REPEAT": "Mit wie vielen Spielern möchtest du spielen?",
     "WINNER": "{{player_name}} gewinnt!"
   }

@@ -173,7 +173,7 @@ app.setHandler({
       // play explosion sound (and animation)
       let explosion_slot = Math.floor(Math.random() * (explosion_sounds.length - 0) + 0);
       speech.addAudio(explosion_sounds[explosion_slot]);
-      speech.addText(jovo_state.t('PLAYER_ELIMINATED', {'player_name': 'player ' + eliminated_player}));
+      speech.addText(jovo_state.t('PLAYER_ELIMINATED', {'player_number': eliminated_player}));
 
       // determine if the round is over or should continue
       let players_left = 0;
@@ -415,7 +415,7 @@ app.setHandler({
   ****************************************/
   'AnswerIntent': function(questionResponse) {
     let jovo_state = this;
-    let question_response = questionResponse.value;
+    let question_response = questionResponse.value.toLowerCase();
 
     let active_button = jovo_state.getSessionAttribute('active_button');
     let button_count = jovo_state.getSessionAttribute('button_count');
@@ -703,7 +703,7 @@ app.setHandler({
           'button_id': button_id,
           'exploded': false,
           'player_id': current_count,
-          'player_name': 'Player ' + current_count
+          'player_name': jovo_state.t('PLAYER_NAME', {'player_number': current_count})
         });
 
         // save the updated player details to our session
@@ -723,7 +723,7 @@ app.setHandler({
 
         } else {
           // need to set up more buttons
-          speech.addText(jovo_state.t('PLAYER_PRESS_BUTTON', {player_name: 'Player ' + (current_count + 1)}));
+          speech.addText(jovo_state.t('PLAYER_PRESS_BUTTON', {'player_number': (current_count + 1)}));
 
           let clock_slot = Math.floor(Math.random() * (clock_sounds.length - 0) + 0);
           speech.addAudio(clock_sounds[clock_slot]).addBreak('100ms');
