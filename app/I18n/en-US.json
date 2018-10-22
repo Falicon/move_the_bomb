@@ -19,6 +19,6 @@
     "TWO_REQUIRED_REPEAT": "How many players do you have?",
     "WELCOME": "Welcome to Move the Bomb! This game requires Alexa buttons. Each player should have their own button. How many players will there be?",
     "WELCOME_REPEAT": "How many players do you want to play with?",
-    "WINNER": "{{player_name}} wins!"
+    "WINNER": "Player {{player_number}} wins!"
   }
 }

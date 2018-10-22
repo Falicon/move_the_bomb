@@ -320,7 +320,7 @@ app.setHandler({
           .setAnimations([ { "repeat": 1, "targetLights":["1"], "sequence": sequence } ])
           .setLight([players[winner]['button_id']], 0, []);
 
-        speech.addText(jovo_state.t('WINNER', {'player_name':players[winner]['player_name']})).addBreak('100ms');
+        speech.addText(jovo_state.t('WINNER', {'player_number':players[winner]['player_id']})).addBreak('100ms');
 
         speech.addText(jovo_state.t('ANOTHER_ROUND'));
 

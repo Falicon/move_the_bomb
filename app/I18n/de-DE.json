@@ -19,6 +19,6 @@
     "TWO_REQUIRED_REPEAT": "Wie viele Spieler hast du?",
     "WELCOME": "Willkommen, um die Bombe zu bewegen! Dieses Spiel benötigt Alexa-Tasten. Jeder Spieler sollte seinen eigenen Button haben. Wie viele Spieler wird es geben?",
     "WELCOME_REPEAT": "Mit wie vielen Spielern möchtest du spielen?",
-    "WINNER": "{{player_name}} gewinnt!"
+    "WINNER": "Spieler {{player_number}} gewinnt!"
   }
 }
